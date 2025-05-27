@@ -1,9 +1,12 @@
 #include <iostream>
 #include <thread>
+#include <mutex>
 
 int counter = 0;
+std::mutex mtx;
 
 void increment(int thread_id) {
+    std::lock_guard<std::mutex> lock(mtx);
     counter += thread_id;
     std::cout << "Thread " << thread_id << ": counter = " << counter << "\n";
 }
@@ -19,3 +22,4 @@ int main() {
 
     return 0;
 }
+
