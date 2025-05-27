@@ -2,24 +2,28 @@
 #include <thread>
 #include <mutex>
 
-int counter = 0;
-std::mutex mtx;
+std::mutex mtx1, mtx2;
 
-void increment(int thread_id) {
-    std::lock_guard<std::mutex> lock(mtx);
-    counter += thread_id;
-    std::cout << "Thread " << thread_id << ": counter = " << counter << "\n";
+void threadA() {
+    std::lock_guard<std::mutex> lock1(mtx1);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::lock_guard<std::mutex> lock2(mtx2);
+    std::cout << "Thread A acquired both mutexes\n";
+}
+
+void threadB() {
+    std::lock_guard<std::mutex> lock2(mtx2);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::lock_guard<std::mutex> lock1(mtx1);
+    std::cout << "Thread B acquired both mutexes\n";
 }
 
 int main() {
-    std::thread t1(increment, 1);
-    std::thread t2(increment, 2);
-    std::thread t3(increment, 3);
+    std::thread t1(threadA);
+    std::thread t2(threadB);
 
     t1.join();
     t2.join();
-    t3.join();
 
     return 0;
 }
-
