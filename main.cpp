@@ -1,20 +1,21 @@
 #include <iostream>
 #include <thread>
-#include <vector>
+
+int counter = 0;
+
+void increment(int thread_id) {
+    counter += thread_id;
+    std::cout << "Thread " << thread_id << ": counter = " << counter << "\n";
+}
 
 int main() {
-    std::vector<std::thread> threads;
+    std::thread t1(increment, 1);
+    std::thread t2(increment, 2);
+    std::thread t3(increment, 3);
 
-    for (int i = 1; i <= 3; ++i) {
-        threads.emplace_back([i]() {
-            int result = i * i;
-            std::cout << "Thread " << i << ": " << i << "^2 = " << result << "\n";
-        });
-    }
-
-    for (auto& t : threads) {
-        t.join();
-    }
+    t1.join();
+    t2.join();
+    t3.join();
 
     return 0;
 }
